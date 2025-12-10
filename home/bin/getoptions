@@ -74,14 +74,15 @@ getoptions() {
 	_disp() { args "" "$@"; }
 	_msg() { args "" _ "$@"; }
 
-	cmd() { _mode=@ _cmds="$_cmds${_cmds:+|}'\''$1'\''"; }
-	"$@"
-	cmd() { :; }
-	_0 "${_rest:?}='\'''\''"
+        cmd() { _mode=@ _cmds="$_cmds${_cmds:+|}'\''$1'\''"; }
+        "$@"
+        cmd() { :; }
+        _0 "${_rest:?}='\'''\''"
 
-	_0 "${_def:-$2}() {"
-	_1 '\''OPTIND=$(($#+1))'\''
-	_1 "while OPTARG= && [ \"\${$_rest}\" != x ] && [ \$# -gt 0 ]; do"
+        _0 "${_def:-$2}() {"
+        _1 '\''local OPTARG OPTIND'\''
+        _1 '\''OPTIND=$(($#+1))'\''
+        _1 "while OPTARG= && [ \"\${$_rest}\" != x ] && [ \$# -gt 0 ]; do"
 	[ "$_abbr" ] && getoptions_abbr "$@"
 
 	args() {

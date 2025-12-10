@@ -33,23 +33,33 @@ Describe "getoptions()"
 		The status should be success
 	End
 
-	It "parses options with default parser name"
-		parse() {
-			eval "$(getoptions parser_definition -)"
-			printf '%s ' "$@"
-		}
-		parser_definition() { setup ARGS; echo 'called' >&2; }
-		When call parse 1 2 3
-		The word 1 of stderr should eq "called"
-		The output should eq "1 2 3 "
-		The status should be success
-	End
+        It "parses options with default parser name"
+                parse() {
+                        eval "$(getoptions parser_definition -)"
+                        printf '%s ' "$@"
+                }
+                parser_definition() { setup ARGS; echo 'called' >&2; }
+                When call parse 1 2 3
+                The word 1 of stderr should eq "called"
+                The output should eq "1 2 3 "
+                The status should be success
+        End
 
-	Describe 'handling arguments'
-		Context 'when scanning mode is default'
-			parser_definition() {
-				setup ARGS -- 'foo bar'
-				flag FLAG_A -a
+        It "does not modify global OPTARG and OPTIND"
+                parser_definition() { setup ARGS; flag FLAG -f; }
+                OPTARG="global_optarg"
+                OPTIND=7
+                When call parse -f
+                The variable FLAG should eq 1
+                The variable OPTARG should eq "global_optarg"
+                The variable OPTIND should eq 7
+        End
+
+        Describe 'handling arguments'
+                Context 'when scanning mode is default'
+                        parser_definition() {
+                                setup ARGS -- 'foo bar'
+                                flag FLAG_A -a
 			}
 			Specify "treats non-options as arguments"
 				When call restargs -a 1 -a 2 -a 3 - -- -a
