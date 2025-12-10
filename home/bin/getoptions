@@ -198,8 +198,13 @@ getoptions() {
 	esac
 	_2 "esac"
 	_2 "shift"
-	_1 "done"
-	_1 '\''[ $# -eq 0 ] && { OPTIND=1; unset OPTARG; return 0; }'\''
+        _1 "done"
+        _1 "cleanup() {"
+        _2 "unset -f args setup _flag _param _option _disp _msg cmd rest valid _wa _op prehook invoke kv sw loop code quote"
+        _2 "unset on no export init _hasarg validate pattern counter _rest _alt _mode _plus _flags _nflags _opts _help _abbr _cmds _ignore_unknown"
+        _1 "}"
+        _1 "cleanup"
+        _1 '\''[ $# -eq 0 ] && { OPTIND=1; unset OPTARG; return 0; }'\''
 	_1 '\''case $1 in'\''
 	_2 '\''unknown) set "Unrecognized option: $2" "$@" ;;'\''
 	_2 '\''noarg) set "Does not allow an argument: $2" "$@" ;;'\''
