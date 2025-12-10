@@ -14,7 +14,7 @@ outlibs() {
 # [getoptions] License: Creative Commons Zero v1.0 Universal
 getoptions() {
 	_error="" _on=1 _no="" _export="" _plus="" _mode="" _alt="" _rest="" _def=""
-	_flags="" _nflags="" _opts="" _help="" _abbr="" _cmds="" _init=@empty IFS=" "
+        _flags="" _nflags="" _opts="" _help="" _abbr="" _cmds="" _init=@empty _ignore_unknown="" IFS=" "
 	[ $# -lt 2 ] && set -- "${1:?No parser definition}" -
 	[ "$2" = - ] && _def=getoptions_parse
 
@@ -64,10 +64,10 @@ getoptions() {
 				code "$1" _0 "${export:+export }$1=$init" "OPTARG=$init; ${1#:}"
 		esac
 	}
-	_setup() {
-		[ "${1#-}" ] && _rest=$1
-		while loop "$@" && shift; do kv "$1" _; done
-	}
+        _setup() {
+                [ "${1#-}" ] && _rest=$1
+                while loop "$@" && shift; do kv "$1" _; done
+        }
 	_flag() { args "" "$@"; defvar "$@"; }
 	_param() { args 1 "$@"; defvar "$@"; }
 	_option() { args 1 "$@"; defvar "$@"; }
@@ -178,7 +178,13 @@ getoptions() {
 	_3 "--)"
 	[ "$_mode" = @ ] || _4 "shift"
 	rest
-	_3 "[-${_plus:++}]?*)" '\''set "unknown" "$1"; break ;;'\''
+        if [ "$_ignore_unknown" ]; then
+                _3 "[-${_plus:++}]?*)"
+                _4 "$_rest=\"\${$_rest}" '\''\"\${$(($OPTIND-$#))}\""'\''
+                _4 ";;"
+        else
+                _3 "[-${_plus:++}]?*)" '\''set "unknown" "$1"; break ;;'\''
+        fi
 	_3 "*)"
 	case $_mode in
 		@)
